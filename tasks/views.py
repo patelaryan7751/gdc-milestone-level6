@@ -110,13 +110,9 @@ class GenericTaskView(LoginRequiredMixin, ListView):
     queryset = Task.objects.filter(deleted=False)
     template_name = "tasks.html"
     context_object_name = "tasks"
-    paginate_by = 10
 
     def get_queryset(self):
-        search_term = self.request.GET.get("search")
         tasks = Task.objects.filter(user=self.request.user)
-        if search_term:
-            tasks = tasks.filter(title__icontains=search_term)
         return tasks
 
     def get_context_data(self, **kwargs):
