@@ -66,6 +66,8 @@ class TaskCreateForm(ModelForm):
         if(status == 1):
             return False
 
+        # priority increase algorithm
+
         try:
             task = Task.objects.get(
                 priority=priority, completed=False, user=user)
