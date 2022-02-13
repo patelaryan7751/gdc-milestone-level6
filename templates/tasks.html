@@ -8,273 +8,224 @@
 </head>
 
 <body>
-    <div class="grid grid-cols-1 divide-y">
-        <div class="bg-slate-900 flex justify-start">
-            <div class="mb-2 mt-2 ml-2">
-                <h1 class="mt-3 lg:text-2xl md:text-2xl font-bold text-slate-50"><a href="http://localhost:8000/">Task
-                        <span
-                            class="before:block before:absolute before:-inset-1 before:-skew-y-3 before:bg-green-500 relative inline-block">
-                            <span class="relative text-white">Manager</span>
-                        </span>
-                    </a>
-                </h1>
-            </div>
-            <div class="ml-3"><button
-                    class="border-2 rounded-full border-rose-500 bg-rose-500 text-slate-50 text-1xl mt-5 px-3">
-                    <a href="?taskSelected=Pending">Pending <span
-                            class="font-bold">{{pendingTasks|length}}</span></a></button>
-            </div>
-            <div class="ml-3"><button
-                    class="border-2 rounded-full border-green-500 bg-green-500 text-slate-50 text-1xl mt-5 px-3">
-                    <a href="?taskSelected=Completed">Completed <span
-                            class="font-bold">{{completedTasks|length}}</span></a></button>
-            </div>
-            <br><br><br>
-        </div>
-        <div class="grid lg:grid-cols-2 sm:grid-cols-1 gap-5">
-            <div class="lg:ml-4">
-                <br><br>
-                <blockquote class="text-2xl font-semibold italic text-center text-slate-900">
-                    Manage your Tasks
-                    <span
-                        class="before:block before:absolute before:-inset-1 before:-skew-y-3 before:bg-pink-500 relative inline-block">
-                        <span class="relative text-white">like a pro</span>
-                    </span>
-                    with us, don't worry we got your back.
-                </blockquote>
-                <img src="https://vectorforfree.com/wp-content/uploads/2020/03/Working_Men_VectorForFree.png" />
-            </div>
-            <div class="px-20 py-2 lg:ml-4 mt-3">
+
+    <div class="px-20 py-2 lg:ml-4 mt-3">
+        <div>
+            <div class="flex justify-between px-6">
                 <div>
-                    <div class="flex justify-between px-6">
-                        <div>
-                            <h1 class="font-bold text-3xl ">Hi {{user}}</h1>
-                            <p class="text-slate-600 absolute mt-2" style="position: absolute;">
-                                {{completedTasks|length}} of
-                                {{tasks|length}} tasks completed
-                            </p>
-                        </div>
-
-                        <div>
-                            <a href="/user/logout/" class="font-medium text-sm text-red-500">Log Out</a>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="flex justify-between px-8 py-6">
-
-                        {% if taskSelected.selected == "All" %}
-                        <div><a href="?taskSelected=All"
-                                class="font-medium text-red-500 rounded-full px-5 py-1 bg-red-200">All</a>
-                        </div>
-                        <div><a href="?taskSelected=Pending"
-                                class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">Pending</a>
-                        </div>
-                        <div><a href="?taskSelected=Completed"
-                                class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">Completed</a>
-                        </div>
-
-                        {% endif %}
-                        {% if taskSelected.selected == "Pending" %}
-                        <div><a href="?taskSelected=All"
-                                class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">All</a>
-                        </div>
-                        <div><a href="?taskSelected=Pending"
-                                class="font-medium text-red-500 rounded-full px-5 py-1 bg-red-200">Pending</a>
-                        </div>
-                        <div><a href="?taskSelected=Completed"
-                                class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">Completed</a>
-                        </div>
-                        {% endif %}
-                        {% if taskSelected.selected == "Completed" %}
-                        <div><a href="?taskSelected=All"
-                                class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">All</a>
-                        </div>
-                        <div><a href="?taskSelected=Pending"
-                                class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">Pending</a>
-                        </div>
-                        <div><a href="?taskSelected=Completed"
-                                class="font-medium text-red-500 rounded-full px-5 py-1 bg-red-200">Completed</a>
-                        </div>
-                        {% endif %}
-                        {% if taskSelected.selected == None %}
-                        <div><a href="?taskSelected=All"
-                                class="font-medium text-red-500 rounded-full px-5 py-1 bg-red-200">All</a>
-                        </div>
-                        <div><a href="?taskSelected=Pending"
-                                class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">Pending</a>
-                        </div>
-                        <div><a href="?taskSelected=Completed"
-                                class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">Completed</a>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <br>
-                    <div class="px-8">
-
-                        {% if taskSelected.selected == "All" %}
-                        {% if tasks %}
-                        {% for task in tasks %}
-                        <div class="w-128 bg-slate-100 rounded-lg px-4 py-4 mt-3">
-                            <div class="flex justify-between">
-                                <div>
-                                    {% if task.completed == True %}
-                                    <a href="/detail-task/{{task.id}}"
-                                        class="font-medium text-xl line-through text-rose-500">{{task.title}}</a>
-                                    {% else %}
-                                    <a href="/detail-task/{{task.id}}" class="font-medium text-xl">{{task.title}}</a>
-                                    {% endif %}
-                                    <p class="font-medium text-slate-500">{{task.created_date|date:"D d M" }}</p>
-                                </div>
-                                <div>
-                                    <div class="flex justify-start">
-                                        <div class="mr-3">
-                                            <a href="/update-task/{{task.id}}"><svg xmlns="http://www.w3.org/2000/svg"
-                                                    class="rounded-md
-                                                bg-teal-400 h-10 w-10 px-2 text-white" fill="none" viewBox="0 0 24 24"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                </svg></a>
-                                        </div>
-                                        <div>
-                                            <a href="/delete-task/{{task.id}}"><svg xmlns="http://www.w3.org/2000/svg"
-                                                    class="rounded-md bg-rose-500 h-10 w-10 px-2 text-white" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        {% else %}
-                        <br>
-                        <center>
-                            <img src="https://cdn-icons-png.flaticon.com/512/5058/5058432.png" width="100px"
-                                height="70px">
-                            <br>
-                            <h1 class="text-xl font-bold">Sorry no complted or pending task added till now!</h1>
-                        </center>
-                        {% endif %}
-                        {% endif %}
-
-
-
-                        {% if taskSelected.selected == "Pending" %}
-                        {% if pendingTasks %}
-                        {% for task in tasks %}
-                        {% if task.completed != True %}
-                        <div class="w-128 bg-slate-100 rounded-lg px-4 py-4 mt-3">
-
-
-                            <div class="flex justify-between">
-                                <div>
-                                    <a href="/detail-task/{{task.id}}" class="font-medium text-xl">{{task.title}}</a>
-                                    <p class="font-medium text-slate-500">{{task.created_date|date:"D d M" }}</p>
-                                </div>
-                                <div>
-                                    <div class="flex justify-start">
-                                        <div class="mr-3">
-                                            <a href="/update-task/{{task.id}}"><svg xmlns="http://www.w3.org/2000/svg"
-                                                    class="rounded-md
-                                                bg-teal-400 h-10 w-10 px-2 text-white" fill="none" viewBox="0 0 24 24"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                </svg></a>
-                                        </div>
-                                        <div>
-                                            <a href="/delete-task/{{task.id}}"><svg xmlns="http://www.w3.org/2000/svg"
-                                                    class="rounded-md bg-rose-500 h-10 w-10 px-2 text-white" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% endfor %}
-                        {% else %}
-                        <br>
-                        <center>
-                            <img src="https://cdn-icons-png.flaticon.com/512/5058/5058432.png" width="100px"
-                                height="70px">
-                            <br>
-                            <h1 class="text-xl font-bold">Sorry no pending task added till now!</h1>
-                        </center>
-                        {% endif %}
-                        {% endif %}
-
-
-
-                        {% if taskSelected.selected == "Completed" %}
-                        {% if completedTasks %}
-                        {% for task in completedTasks %}
-                        <div class="w-128 bg-slate-100 rounded-lg px-4 py-4 mt-3">
-
-
-                            <div class="flex justify-between">
-                                <div>
-                                    <a href="/detail-task/{{task.id}}" class="font-medium text-xl">{{task.title}}</a>
-                                    <p class="font-medium text-slate-500">{{task.created_date|date:"D d M" }}</p>
-                                </div>
-                                <div>
-                                    <div class="flex justify-start">
-                                        <div class="mr-3">
-                                            <a href="/update-task/{{task.id}}"><svg xmlns="http://www.w3.org/2000/svg"
-                                                    class="rounded-md
-                                                bg-teal-400 h-10 w-10 px-2 text-white" fill="none" viewBox="0 0 24 24"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                                </svg></a>
-                                        </div>
-                                        <div>
-                                            <a href="/delete-task/{{task.id}}"><svg xmlns="http://www.w3.org/2000/svg"
-                                                    class="rounded-md bg-rose-500 h-10 w-10 px-2 text-white" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        {% else %}
-                        <br>
-                        <center>
-                            <img src="https://cdn-icons-png.flaticon.com/512/5058/5058432.png" width="100px"
-                                height="70px">
-                            <br>
-                            <h1 class="text-xl font-bold">Sorry no completed task added till now!</h1>
-                        </center>
-                        {% endif %}
-                        {% endif %}
-
-                    </div>
-                    <br><br><br><br><br>
-                    <a href="/create-task">
-                        <div class="text-center w-128 bg-red-500 text-white rounded-lg px-4 py-4 mt-3 ml-6">
-                            Add
-                        </div>
-                    </a>
+                    <h1 class="font-bold text-3xl ">Hi {{user}}</h1>
+                    <p class="text-slate-600 absolute mt-2" style="position: absolute;">
+                        {{completedTasks|length}} of
+                        {{tasks|length}} tasks completed
+                    </p>
                 </div>
 
+                <div>
+                    <a href="/user/logout/" class="font-medium text-sm text-red-500">Log Out</a>
+                </div>
             </div>
+            <br>
+            <div class="flex justify-between px-8 py-6">
+
+                {% if taskSelected.selected == "All" %}
+                <div><a href="?taskSelected=All"
+                        class="font-medium text-red-500 rounded-full px-5 py-1 bg-red-200">All</a>
+                </div>
+                <div><a href="?taskSelected=Pending"
+                        class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">Pending</a>
+                </div>
+                <div><a href="?taskSelected=Completed"
+                        class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">Completed</a>
+                </div>
+
+                {% endif %}
+                {% if taskSelected.selected == "Pending" %}
+                <div><a href="?taskSelected=All"
+                        class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">All</a>
+                </div>
+                <div><a href="?taskSelected=Pending"
+                        class="font-medium text-red-500 rounded-full px-5 py-1 bg-red-200">Pending</a>
+                </div>
+                <div><a href="?taskSelected=Completed"
+                        class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">Completed</a>
+                </div>
+                {% endif %}
+                {% if taskSelected.selected == "Completed" %}
+                <div><a href="?taskSelected=All"
+                        class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">All</a>
+                </div>
+                <div><a href="?taskSelected=Pending"
+                        class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">Pending</a>
+                </div>
+                <div><a href="?taskSelected=Completed"
+                        class="font-medium text-red-500 rounded-full px-5 py-1 bg-red-200">Completed</a>
+                </div>
+                {% endif %}
+                {% if taskSelected.selected == None %}
+                <div><a href="?taskSelected=All"
+                        class="font-medium text-red-500 rounded-full px-5 py-1 bg-red-200">All</a>
+                </div>
+                <div><a href="?taskSelected=Pending"
+                        class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">Pending</a>
+                </div>
+                <div><a href="?taskSelected=Completed"
+                        class="font-medium hover:text-red-500 hover:rounded-full px-5 py-1 hover:bg-red-200">Completed</a>
+                </div>
+                {% endif %}
+            </div>
+            <br>
+            <div class="px-8">
+
+                {% if taskSelected.selected == "All" %}
+                {% if tasks %}
+                {% for task in tasks %}
+                <div class="w-128 bg-slate-100 rounded-lg px-4 py-4 mt-3">
+                    <div class="flex justify-between">
+                        <div>
+                            {% if task.completed == True %}
+                            <a href="/detail-task/{{task.id}}"
+                                class="font-medium text-xl line-through text-rose-500">{{task.title}}</a>
+                            {% else %}
+                            <a href="/detail-task/{{task.id}}" class="font-medium text-xl">{{task.title}}</a>
+                            {% endif %}
+                            <p class="font-medium text-slate-500">{{task.created_date|date:"D d M" }}</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-start">
+                                <div class="mr-3">
+                                    <a href="/update-task/{{task.id}}"><svg xmlns="http://www.w3.org/2000/svg" class="rounded-md
+                                                bg-teal-400 h-10 w-10 px-2 text-white" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg></a>
+                                </div>
+                                <div>
+                                    <a href="/delete-task/{{task.id}}"><svg xmlns="http://www.w3.org/2000/svg"
+                                            class="rounded-md bg-rose-500 h-10 w-10 px-2 text-white" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <br>
+                <center>
+                    <img src="https://cdn-icons-png.flaticon.com/512/5058/5058432.png" width="100px" height="70px">
+                    <br>
+                    <h1 class="text-xl font-bold">Sorry no complted or pending task added till now!</h1>
+                </center>
+                {% endif %}
+                {% endif %}
+
+
+
+                {% if taskSelected.selected == "Pending" %}
+                {% if pendingTasks %}
+                {% for task in tasks %}
+                {% if task.completed != True %}
+                <div class="w-128 bg-slate-100 rounded-lg px-4 py-4 mt-3">
+
+
+                    <div class="flex justify-between">
+                        <div>
+                            <a href="/detail-task/{{task.id}}" class="font-medium text-xl">{{task.title}}</a>
+                            <p class="font-medium text-slate-500">{{task.created_date|date:"D d M" }}</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-start">
+                                <div class="mr-3">
+                                    <a href="/update-task/{{task.id}}"><svg xmlns="http://www.w3.org/2000/svg" class="rounded-md
+                                                bg-teal-400 h-10 w-10 px-2 text-white" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg></a>
+                                </div>
+                                <div>
+                                    <a href="/delete-task/{{task.id}}"><svg xmlns="http://www.w3.org/2000/svg"
+                                            class="rounded-md bg-rose-500 h-10 w-10 px-2 text-white" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% else %}
+                <br>
+                <center>
+                    <img src="https://cdn-icons-png.flaticon.com/512/5058/5058432.png" width="100px" height="70px">
+                    <br>
+                    <h1 class="text-xl font-bold">Sorry no pending task added till now!</h1>
+                </center>
+                {% endif %}
+                {% endif %}
+
+
+
+                {% if taskSelected.selected == "Completed" %}
+                {% if completedTasks %}
+                {% for task in completedTasks %}
+                <div class="w-128 bg-slate-100 rounded-lg px-4 py-4 mt-3">
+
+
+                    <div class="flex justify-between">
+                        <div>
+                            <a href="/detail-task/{{task.id}}" class="font-medium text-xl">{{task.title}}</a>
+                            <p class="font-medium text-slate-500">{{task.created_date|date:"D d M" }}</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-start">
+                                <div class="mr-3">
+                                    <a href="/update-task/{{task.id}}"><svg xmlns="http://www.w3.org/2000/svg" class="rounded-md
+                                                bg-teal-400 h-10 w-10 px-2 text-white" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg></a>
+                                </div>
+                                <div>
+                                    <a href="/delete-task/{{task.id}}"><svg xmlns="http://www.w3.org/2000/svg"
+                                            class="rounded-md bg-rose-500 h-10 w-10 px-2 text-white" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <br>
+                <center>
+                    <img src="https://cdn-icons-png.flaticon.com/512/5058/5058432.png" width="100px" height="70px">
+                    <br>
+                    <h1 class="text-xl font-bold">Sorry no completed task added till now!</h1>
+                </center>
+                {% endif %}
+                {% endif %}
+
+            </div>
+            <br><br><br><br><br>
+            <a href="/create-task">
+                <div class="text-center w-128 bg-red-500 text-white rounded-lg px-4 py-4 mt-3 ml-6">
+                    Add
+                </div>
+            </a>
         </div>
+
     </div>
 </body>
 

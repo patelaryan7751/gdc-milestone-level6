@@ -50,33 +50,45 @@ class TaskCreateForm(ModelForm):
         model = Task
         fields = ["title", "description", "priority", "completed"]
 
-    def check_priority(self, user):
+     # this function checks wether there is a existing priority if its there then it increses by 1
+     # also a status is passed for operation related to task update after addition
+
+    def checkandupdate_Priority(self, user, status):
         priority = self.cleaned_data['priority']
-        title = self.cleaned_data['title']
+        task_to_be_updated = []
+        task = False
 
-       # modifying priority
+        # a check during task updation which states that
+        # 1) Task exist already and now user has some update in it
+        # 2) It specifies that user has not updated the priority so it can go with normal updation
+        #    without running the priority increase algorithm
 
-        def modifyPriority(priority):
-            if Task.objects.filter(priority=priority+1, completed=False, user=user).exists():
-                priority = priority+1
-                modifyPriority(priority)
-            else:
+        if(status == 1):
+            return False
+
+        try:
+            task = Task.objects.get(
+                priority=priority, completed=False, user=user)
+        except:
+            task = False
+
+        while task != False:
+            task_to_be_updated.append(task)
+            priority = priority+1
+            try:
                 task = Task.objects.get(
                     priority=priority, completed=False, user=user)
-                Task(title=task.title, description=task.description,
-                     priority=priority+1, user=user).save()
-                Task.objects.filter(id=task.id).delete()
-        # a check wether the task with same name exist beacuse during marking a task complete it is creating a new task
+            except:
+                task = False
 
-        def taskCheckExist():
-            if Task.objects.filter(priority=priority, completed=False, title=title, user=user):
-                return priority
-            else:
-                while Task.objects.filter(priority=priority, completed=False, user=user).exists():
-                    modifyPriority(priority)
-                return priority
-                # start of process of checking tasks
-        taskCheckExist()
+         # after we got the list of tasks whose priority is needed to be updated we update it.
+
+        if len(task_to_be_updated) > 0:
+            for task in task_to_be_updated:
+                task.priority += 1
+            return task_to_be_updated
+        else:
+            return False
 
 
 class GenericTaskUpdateView(AuthorisedTaskManager, UpdateView):
@@ -86,7 +98,19 @@ class GenericTaskUpdateView(AuthorisedTaskManager, UpdateView):
     success_url = "/tasks"
 
     def form_valid(self, form):
-        form.check_priority(self.request.user)
+
+        status = 0
+
+        # here it is a check if a task is updated then while updating it should not run the
+        # priority increase algorithm (status=1) it should run it only when user is changing the priority (status=0)
+
+        if(Task.objects.filter(priority=self.object.priority, completed=self.object.completed, title=self.object.title, user=self.request.user)):
+            status = 1
+
+        task_tobeUpdated = form.checkandupdate_Priority(
+            self.request.user, status)
+        if(task_tobeUpdated != False):
+            Task.objects.bulk_update(task_tobeUpdated, ['priority'])
         self.object = form.save()
         self.object.user = self.request.user
         self.object.save()
@@ -99,7 +123,19 @@ class GenericTaskCreateView(AuthorisedTaskManager, CreateView):
     success_url = "/tasks"
 
     def form_valid(self, form):
-        form.check_priority(self.request.user)
+
+        # get the list which contains the tasks whoose priority are updated so that we can go for bulkupdate
+
+        task_tobeUpdated = form.checkandupdate_Priority(
+            self.request.user, status=0)
+
+        # a condition whether to go for bulkupdate or not on basis of task priority existence
+
+        if(task_tobeUpdated != False):
+            Task.objects.bulk_update(task_tobeUpdated, ['priority'])
+
+        # normal prodedure as follows to add task
+
         self.object = form.save()
         self.object.user = self.request.user
         self.object.save()
