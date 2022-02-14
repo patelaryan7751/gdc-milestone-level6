@@ -114,7 +114,8 @@ class GenericTaskUpdateView(AuthorisedTaskManager, UpdateView):
         # here it is a check if a task is updated then while updating it should not run the
         # priority increase algorithm (status=1) it should run it only when user is changing the priority (status=0)
 
-        if(Task.objects.filter(priority=self.object.priority, completed=self.object.completed, title=self.object.title, user=self.request.user, deleted=self.object.deleted)):
+        currenttask = Task.objects.get(id=self.object.id)
+        if currenttask.priority == self.object.priority:
             status = 1
 
         task_tobeUpdated = form.checkandupdate_Priority(
