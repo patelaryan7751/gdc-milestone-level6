@@ -38,6 +38,14 @@ class GenericTaskDeleteView(AuthorisedTaskManager, DeleteView):
     template_name = "task_delete.html"
     success_url = "/tasks"
 
+   # Applied soft deletion
+
+    def form_valid(self, form):
+        success_url = self.get_success_url()
+        self.object.deleted = True
+        self.object.save()
+        return HttpResponseRedirect(success_url)
+
 
 class GenericTaskDetailView(AuthorisedTaskManager, DetailView):
     model = Task
@@ -70,7 +78,7 @@ class TaskCreateForm(ModelForm):
 
         try:
             task = Task.objects.get(
-                priority=priority, completed=False, user=user)
+                priority=priority, completed=False, deleted=False, user=user)
         except:
             task = False
 
@@ -79,7 +87,7 @@ class TaskCreateForm(ModelForm):
             priority = priority+1
             try:
                 task = Task.objects.get(
-                    priority=priority, completed=False, user=user)
+                    priority=priority, completed=False, deleted=False, user=user)
             except:
                 task = False
 
@@ -106,7 +114,7 @@ class GenericTaskUpdateView(AuthorisedTaskManager, UpdateView):
         # here it is a check if a task is updated then while updating it should not run the
         # priority increase algorithm (status=1) it should run it only when user is changing the priority (status=0)
 
-        if(Task.objects.filter(priority=self.object.priority, completed=self.object.completed, title=self.object.title, user=self.request.user)):
+        if(Task.objects.filter(priority=self.object.priority, completed=self.object.completed, title=self.object.title, user=self.request.user, deleted=self.object.deleted)):
             status = 1
 
         task_tobeUpdated = form.checkandupdate_Priority(
@@ -144,21 +152,16 @@ class GenericTaskCreateView(AuthorisedTaskManager, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class GenericTaskView(LoginRequiredMixin, ListView):
-    queryset = Task.objects.filter(deleted=False)
+class GenericTaskView(AuthorisedTaskManager, ListView):
     template_name = "tasks.html"
     context_object_name = "tasks"
-
-    def get_queryset(self):
-        tasks = Task.objects.filter(user=self.request.user)
-        return tasks
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['completedTasks'] = Task.objects.filter(
-            completed=True, user=self.request.user)
+            completed=True, deleted=False, user=self.request.user)
         context['pendingTasks'] = Task.objects.filter(
-            completed=False, user=self.request.user)
+            completed=False, deleted=False, user=self.request.user)
         context['taskSelected'] = {
             "selected": self.request.GET.get("taskSelected") if self.request.GET.get("taskSelected") else "All"}
         return context
