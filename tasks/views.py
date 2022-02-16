@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.list import ListView
@@ -83,6 +83,10 @@ class TaskCreateForm(ModelForm):
             task = False
 
         while task != False:
+
+            # task priority increased then appended
+
+            task.priority += 1
             task_to_be_updated.append(task)
             priority = priority+1
             try:
@@ -94,11 +98,7 @@ class TaskCreateForm(ModelForm):
          # after we got the list of tasks whose priority is needed to be updated we update it.
 
         if len(task_to_be_updated) > 0:
-            for task in task_to_be_updated:
-                task.priority += 1
-            return task_to_be_updated
-        else:
-            return False
+            Task.objects.bulk_update(task_to_be_updated, ['priority'])
 
 
 class GenericTaskUpdateView(AuthorisedTaskManager, UpdateView):
@@ -114,14 +114,11 @@ class GenericTaskUpdateView(AuthorisedTaskManager, UpdateView):
         # here it is a check if a task is updated then while updating it should not run the
         # priority increase algorithm (status=1) it should run it only when user is changing the priority (status=0)
 
-        currenttask = Task.objects.get(id=self.object.id)
-        if currenttask.priority == self.object.priority:
+        currentTask = Task.objects.get(id=self.object.id)
+        if currentTask.priority == self.object.priority:
             status = 1
 
-        task_tobeUpdated = form.checkandupdate_Priority(
-            self.request.user, status)
-        if(task_tobeUpdated != False):
-            Task.objects.bulk_update(task_tobeUpdated, ['priority'])
+        form.checkandupdate_Priority(self.request.user, status)
         self.object = form.save()
         self.object.user = self.request.user
         self.object.save()
@@ -137,13 +134,8 @@ class GenericTaskCreateView(AuthorisedTaskManager, CreateView):
 
         # get the list which contains the tasks whoose priority are updated so that we can go for bulkupdate
 
-        task_tobeUpdated = form.checkandupdate_Priority(
+        form.checkandupdate_Priority(
             self.request.user, status=0)
-
-        # a condition whether to go for bulkupdate or not on basis of task priority existence
-
-        if(task_tobeUpdated != False):
-            Task.objects.bulk_update(task_tobeUpdated, ['priority'])
 
         # normal prodedure as follows to add task
 
